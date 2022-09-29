@@ -9,8 +9,19 @@
 #include "src/ge.h"
 #include "src/sc.h"
 
+/*
+# Test Vector
+# Private key: 0xe59964067f8da772aa66db8bb4c990103203feccce3cf7e24b38da82c43100f5
+# Public key:  5c4af42f8dc436036d0e0a0010a064e139222858b79e8c1c0be061dd7f8ae4fd
+# Message:  Hello
+# Signature: 4ac329357f7cc2141255561bbed326ad5ab1582c4c93197eeec79ecf00ac01eb35293b365ff1431c10d40bd028c39fae185c86931fc51a8eeff40ed533f5ad05
+  test2 is used to verify against the est vector.
+  Normally seed is used for private key (32 bytess.) But the libary uses sha-512(seed) as private key.
+*/
 
-int main() {
+extern void printCharInHexadecimal(const char* str, int len);
+
+void test1(){
     unsigned char public_key[32], private_key[64], seed[32], scalar[32];
     unsigned char other_public_key[32], other_private_key[64];
     unsigned char shared_secret[32], other_shared_secret[32];
@@ -27,9 +38,19 @@ int main() {
     ed25519_create_seed(seed);
     ed25519_create_keypair(public_key, private_key, seed);
 
+    printf("Public Key: ");
+    printCharInHexadecimal(public_key,32);
+    printf("Private Key: ");
+    printCharInHexadecimal(private_key,64);
+
+    printf("Message: ");
+    printCharInHexadecimal(message,message_len);
+
     /* create signature on the message with the keypair */
     ed25519_sign(signature, message, message_len, public_key, private_key);
 
+    printf("Message Signature: ");
+    printCharInHexadecimal(signature, 64);
     /* verify the signature */
     if (ed25519_verify(signature, message, message_len, public_key)) {
         printf("valid signature\n");
@@ -117,7 +138,7 @@ int main() {
     end = clock();
 
     printf("%fus per signature\n", ((double) ((end - start) * 1000)) / CLOCKS_PER_SEC / i * 1000);
-    
+
 
     printf("testing keypair scalar addition performance: ");
     start = clock();
@@ -146,5 +167,34 @@ int main() {
 
     printf("%fus per shared secret\n", ((double) ((end - start) * 1000)) / CLOCKS_PER_SEC / i * 1000);
 
-    return 0;
+}
+void test2(){
+    unsigned char signature[64];
+
+    const unsigned char message[] = "Hello";
+    const int message_len = strlen((char*) message);
+    unsigned char seed[32] = {0xe5,0x99,0x64,0x06,0x7f,0x8d,0xa7,0x72,0xaa,0x66,0xdb,0x8b,0xb4,0xc9,0x90,0x10,0x32,0x03,0xfe,0xcc,0xce,0x3c,0xf7,0xe2,0x4b,0x38,0xda,0x82,0xc4,0x31,0x00,0xf5};
+
+    unsigned char private_key[64], public_key[32];
+
+    ed25519_create_keypair(public_key,private_key,seed);
+
+    printf("Public Key: ");
+    printCharInHexadecimal(public_key,32);
+
+    printf("Private Key: ");
+    printCharInHexadecimal(private_key,64);
+
+    printf("Message: ");
+    printCharInHexadecimal(message,message_len);
+
+    ed25519_sign(signature, message, message_len, public_key, private_key);
+
+    printf("Message Signature: ");
+    printCharInHexadecimal(signature, 64);
+
+}
+
+int main() {
+    test2();
 }
