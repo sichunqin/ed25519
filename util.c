@@ -13,3 +13,12 @@ void printCharInHexadecimal(const unsigned char* str, int len) {
   }
   printf("\n");
 }
+
+void printBytes(unsigned char *address, int size) {
+    int count;
+    for (count = 0; count < size; count++){
+        printf("%.2x", address[count]);
+    }
+    printf("\n");
+}
+
