@@ -1,23 +1,29 @@
 import ed25519
 
 # Test Vector
-# Private key: 0xe59964067f8da772aa66db8bb4c990103203feccce3cf7e24b38da82c43100f5
+# Private key: e59964067f8da772aa66db8bb4c990103203feccce3cf7e24b38da82c43100f5
 # Public key:  5c4af42f8dc436036d0e0a0010a064e139222858b79e8c1c0be061dd7f8ae4fd
 # Message:  Hello
 # Signature: 4ac329357f7cc2141255561bbed326ad5ab1582c4c93197eeec79ecf00ac01eb35293b365ff1431c10d40bd028c39fae185c86931fc51a8eeff40ed533f5ad05
 
+def testSign():
+    pub_key = bytes.fromhex("5c4af42f8dc436036d0e0a0010a064e139222858b79e8c1c0be061dd7f8ae4fd")
+    prv_key = bytes.fromhex("e59964067f8da772aa66db8bb4c990103203feccce3cf7e24b38da82c43100f5")
+    msg = b'Hello'
+    expected_sig = bytes.fromhex("4ac329357f7cc2141255561bbed326ad5ab1582c4c93197eeec79ecf00ac01eb35293b365ff1431c10d40bd028c39fae185c86931fc51a8eeff40ed533f5ad05")
 
-pub_key = bytes.fromhex("6D2ED0503F07136399F924D624E3FF1687ABA8E56F5CEAB12C112F5579102D9B")
-prv_key = bytes.fromhex("B0188957FC8C548C7A24A4594536FA1A1797DBE3DB92945AF8DCDF19C6F80D56")
-msg = bytes.fromhex("48656C6C6F2C20776F726C6421")
-expected_sig = bytes.fromhex("DA2AAF0BB8138D88EF2E0CBF3086DDE6F0C585323CFD88323E18171E45A9C08B9B24F9EF9FBB58FD50ACDA33A280E81FCAE9E0C79FD2E04042DAA622F4B17D03")
+    signing_key = ed25519.SigningKey(prv_key)
+    sig = signing_key.sign(msg)
 
+    verify_key = ed25519.VerifyingKey(pub_key)
+    verify_key.verify(expected_sig,msg)
 
-#pub_key = bytes.fromhex("6D2ED0503F07136399F924D624E3FF1687ABA8E56F5CEAB12C112F5579102D9B")
-#msg = b'Hello'
-# expected_sig = bytes.fromhex("DA2AAF0BB8138D88EF2E0CBF3086DDE6F0C585323CFD88323E18171E45A9C08B9B24F9EF9FBB58FD50ACDA33A280E81FCAE9E0C79FD2E04042DAA622F4B17D03")
+    print(sig.hex())
 
-signing_key = ed25519.SigningKey(prv_key)
-sig = signing_key.sign(msg)
-print(sig.hex())
+def main():
+    testSign();
+    return
+
+if __name__ == "__main__":
+    main()
 
